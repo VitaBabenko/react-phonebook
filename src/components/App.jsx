@@ -8,8 +8,28 @@ import { ContactList } from './contactList/ContactList';
 export class App extends Component {
   state = {
     contacts: [],
-     filter: ''
+    filter: ''
+  };
+
+  componentDidMount() {
+    const savedContacts = localStorage.getItem('contacts');
+    if (savedContacts !== null) {
+      const parsedContacts = JSON.parse(savedContacts);
+      this.setState({
+        contacts: parsedContacts
+      });
+      return;
+    };
+    this.setState({
+      contacts: []
+    })
   }
+
+  componentDidUpdate(_, prevState) {
+    if (prevState.contacts !== this.state.contacts) {
+      localStorage.setItem('contacts', JSON.stringify(this.state.contacts))
+    }
+  };
   
   addContact = newContact => {
     this.state.contacts.filter(contact => contact.name.toLowerCase() === newContact.name.toLowerCase()).length
@@ -22,8 +42,6 @@ export class App extends Component {
   };
 
   changeFilter = (e) => {
-    console.log(e.currentTarget.value)
-    
     this.setState({
       filter: e.currentTarget.value
     });
